@@ -7,6 +7,8 @@ const repoList = document.querySelector(".repo-list");
 const repoSection = document.querySelector(".repos");
 const repoDataSection = document.querySelector(".repo-data");
 
+const repoBackButton = document.querySelector(".view-repos");
+const filterInput = document.querySelector(".filter-repos");
 
 //Fetch API JSON Data
 const getUser = async function () {
@@ -38,10 +40,13 @@ const getRepos = async function () {
 
 //Display Repo Info
 const displayRepo = function (repos) { 
+    //shows the search input box
+    filterInput.classList.remove("hide");
+    
     //loop and create a list item for each repo
     //give each item a class of "repo" and an <h3> element with the repo name
     //then append the list item to the global variable that selects the unordered repos list
-
+    
     for (const i of repos) { 
         //console.log(i.name);
         const newLi = document.createElement("li");
@@ -67,7 +72,7 @@ const oneRepo = async function (repoName) {
     const getOneRepo = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
     const repoInfo = await getOneRepo.json();
     console.log(repoInfo);
-
+    
     //Grab the languages
     const fetchLanguages = await fetch(repoInfo.languages_url); //fetch data from language_url property of your repoInfo
     const languageData = await fetchLanguages.json(); //saves JSON response
@@ -97,7 +102,8 @@ const displayRepoInfo = function (repoInfo, languages) {
     //Unhide (show) the “repo-data” element. Hide the element with the class of “repos”.
     repoDataSection.classList.remove("hide");
     repoSection.classList.add("hide");
-
+    repoBackButton.classList.remove("hide");
+    
     //Create a new DIV element and add the selected repo name, description, default
     //branch and link to its code on GitHub.
     const newInfoDiv = document.createElement("div");
@@ -111,3 +117,39 @@ const displayRepoInfo = function (repoInfo, languages) {
     repoDataSection.append(newInfoDiv);
 };
  
+//Click even for the back button
+repoBackButton.addEventListener("click", function () { 
+    //unhide (display) the section with the class of “repos”, 
+    //the location where all the repo information appears.
+    //Add the “hide” class to the section where the individual 
+    //repo data will appear.Also, add the “hide” class to the 
+    //Back to Repo Gallery button itself. 
+    repoDataSection.classList.add("hide");
+    repoSection.classList.remove("hide");
+    repoBackButton.classList.add("hide");
+});
+
+//Add an input Event to the Search Box
+//dynamic search
+filterInput.addEventListener("input", function (e) { 
+    const searchValue = e.target.value;
+    //console.log(searchValue);
+
+    //select ALL elements on the page with class of "repo"
+    const repos = document.querySelectorAll(".repo");
+
+    //create a variable and assign it to the lowercase value of the search text.
+    const searchLowerText = searchValue.toLowerCase();
+
+    //loop through each repo inside the repos element. Inside the loop,
+    //create a variable and assign it to the lowercase value of the innerText of each repo
+    for (const repo of repos) { 
+        const repoLowerText = repo.innerText.toLowerCase();
+        if (repoLowerText.includes(searchLowerText)) {
+            repo.classList.remove("hide");
+        } else { 
+            repo.classList.add("hide");
+        }
+    }
+
+});
