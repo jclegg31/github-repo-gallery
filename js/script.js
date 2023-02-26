@@ -3,11 +3,13 @@ const overview = document.querySelector(".overview");
 //GitHub username
 const username = "jclegg31"
 
+
 //Fetch API JSON Data
 const getUser = async function () {
     const request = await fetch(`https://api.github.com/users/${username}`);
     const data = await request.json();
-    displayUser(data);
+    //displayUser(data);
+    console.log(data);
  };
 
  getUser();
